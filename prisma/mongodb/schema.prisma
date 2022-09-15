@@ -1,0 +1,50 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+  //generated files for this db should be in a different directory
+  output   = "../node_modules/@internal/prisma/client"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("MONGO_URL")
+}
+
+model User {
+  id       String   @id @default(auto()) @map("_id") @db.ObjectId
+  email    String   @unique
+  name     String?
+  password String
+  is_admin Boolean
+  profile  Profile?
+}
+
+model Profile {
+  id         String @id @default(auto()) @map("_id") @db.ObjectId
+  user       User   @relation(fields: [id], references: [id])
+  avatar_url String
+  username   String
+}
+
+model Conversation {
+  id              String @id @default(auto()) @map("_id") @db.ObjectId
+  user1           String @db.ObjectId
+  user2           String @db.ObjectId
+  last_message_id String @db.ObjectId
+}
+
+model Message {
+  id           String       @id @default(auto()) @map("_id") @db.ObjectId
+  author_id    String
+  conversation String
+  attachment   Attachment[]
+}
+
+model Attachment {
+  id      String  @id @default(auto()) @map("_id") @db.ObjectId
+  type    String
+  file    String
+  message Message @relation(fields: [id], references: [id])
+}
