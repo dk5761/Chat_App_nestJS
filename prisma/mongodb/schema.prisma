@@ -4,7 +4,7 @@
 generator client {
   provider = "prisma-client-js"
   //generated files for this db should be in a different directory
-  output   = "../node_modules/@internal/prisma/client"
+  output   = "../../node_modules/@internal/prisma/client"
 }
 
 datasource db {
@@ -13,33 +13,36 @@ datasource db {
 }
 
 model User {
-  id       String   @id @default(auto()) @map("_id") @db.ObjectId
-  email    String   @unique
-  name     String?
-  password String
-  is_admin Boolean
-  profile  Profile?
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  email      String   @unique
+  username   String
+  password   String
+  is_admin   Boolean  @default(false)
+  authToken  String?
+  resetToken String?
+  profile    Profile?
 }
 
 model Profile {
   id         String @id @default(auto()) @map("_id") @db.ObjectId
   user       User   @relation(fields: [id], references: [id])
   avatar_url String
-  username   String
+  name       String
 }
 
 model Conversation {
-  id              String @id @default(auto()) @map("_id") @db.ObjectId
-  user1           String @db.ObjectId
-  user2           String @db.ObjectId
-  last_message_id String @db.ObjectId
+  id              String  @id @default(auto()) @map("_id") @db.ObjectId
+  user1           String  @db.ObjectId
+  user2           String  @db.ObjectId
+  last_message_id String? @db.ObjectId
 }
 
 model Message {
-  id           String       @id @default(auto()) @map("_id") @db.ObjectId
-  author_id    String
-  conversation String
-  attachment   Attachment[]
+  id             String       @id @default(auto()) @map("_id") @db.ObjectId
+  author_id      String
+  conversationId String
+  attachment     Attachment[]
+  created_at     DateTime     @default(now())
 }
 
 model Attachment {
@@ -47,4 +50,11 @@ model Attachment {
   type    String
   file    String
   message Message @relation(fields: [id], references: [id])
+}
+
+model Sockets {
+  id       String  @id @default(auto()) @map("_id") @db.ObjectId
+  socketId String  @unique
+  userId   String  @unique
+  isActive Boolean @default(false)
 }

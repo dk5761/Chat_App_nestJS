@@ -1,6 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import * as csurf from 'csurf';
+import { PrismaService } from './prisma.service';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
@@ -8,8 +9,13 @@ async function bootstrap() {
   });
 
   app.enableCors();
-  app.use(csurf);
+  // app.use(csurf);
+
+
 
   await app.listen(3000);
+
+  const prismaService = app.get(PrismaService);
+  await prismaService.enableShutdownHooks(app)
 }
 bootstrap();
