@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, Logger } from '@nestjs/common';
+import { BadRequestException, ConflictException, Injectable, Logger } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UserService } from 'src/user/user.service';
 import * as bcrypt from 'bcrypt';
@@ -27,9 +27,9 @@ export class AuthService {
 
             if (match) {
                 // remove the password and old auth token from the user object.
-                const { password, authToken, ...result } = user;
+
                 // return the user object 
-                return result;
+                return user;
             }
 
             return null;
@@ -41,6 +41,7 @@ export class AuthService {
     async login(user: any) {
 
         try {
+            const { password, authToken, ...result } = user;
             // generate new token
             const token = await this.jwtService.sign({
                 id: user.id,
@@ -53,7 +54,7 @@ export class AuthService {
 
             // return the user with token
             return {
-                ...user,
+                ...result,
                 authToken: token
             };
         } catch (err) {
@@ -67,7 +68,35 @@ export class AuthService {
         // check if the email provided exist?
         const user = await this.userService.getUserByEmail(userData.email);
         if (user) {
-            throw new BadRequestException('email in use');
+            throw new ConflictException("User exist")
+        }
+
+        // hash the password.
+        const hashed = await bcrypt.hash(userData.password, 9);
+
+        // save the user to db
+        const newUser = await this.userService.createUser(
+            {
+                email: userData.email,
+                password: hashed,
+                username: userData.username,
+                is_admin: userData.is_admin,
+                avatar_url: userData.avatar_url,
+                name: userData.name
+            }
+        );
+
+        // log the user in
+        return this.login(newUser);
+    }
+
+    async loginOrRegister(userData: CreateUserParams) {
+
+        // check if the email provided exist?
+        const isUser = await this.userService.getUserByEmail(userData.email);
+        if (isUser) {
+            const user = await this.validateUser(userData.email, userData.password);
+            return this.login(user);
         }
 
         // hash the password.

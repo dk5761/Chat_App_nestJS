@@ -40,8 +40,11 @@ export class UserController {
     @UseGuards(JwtAuthGuard)
     @Put()
     async update(@Request() req: any, @Body() body: UserDto) {
+
         console.log('updating called', body, req.user.id);
-        return await this.userService.updateUser(req.user.id, body);
+        const user = await this.userService.updateUser(req.user.id, body);
+        const { password, authToken, ...result } = user
+        return result
     }
 
     // //delete user

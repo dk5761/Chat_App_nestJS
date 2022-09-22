@@ -16,8 +16,9 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
         // add/delete values to change the user object
         // console.log(payload.email, payload.sub)
         return {
-            id: payload.sub,
-            name: payload.email,
+            id: payload.id,
+            email: payload.email,
+            username: payload.username
         };
     }
 }

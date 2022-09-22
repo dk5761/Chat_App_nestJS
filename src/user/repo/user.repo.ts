@@ -68,8 +68,11 @@ export class UserRepository implements IUserRepository {
         return await this.prisma.user.update({
             where: { id },
             data,
-
-        });
+            include: {
+                profile: true
+            }
+        },
+        );
     }
 
     async delete(id: string) {

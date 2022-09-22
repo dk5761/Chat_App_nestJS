@@ -8,8 +8,8 @@ export class UserDto {
     @IsNotEmpty()
     password: string;
 
-    @IsNotEmpty()
-    username: string;
+
+    username?: string;
 
     @IsBoolean()
     is_admin: boolean;

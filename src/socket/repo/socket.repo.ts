@@ -1,16 +1,17 @@
+import { Injectable } from "@nestjs/common";
 import { PrismaService } from "src/prisma.service";
 import ISocketRepository from "../interface/socket.repo";
 
-
-export default class SocketRepository implements ISocketRepository {
+@Injectable()
+export class SocketRepository implements ISocketRepository {
 
     constructor(
         private prisma: PrismaService
     ) { }
 
     async getTheSocketId(userId: string) {
-
-        return await this.prisma.sockets.findUnique({
+        console.log(userId)
+        return await this.prisma.sockets.findFirst({
             where: {
                 userId
             }
@@ -18,7 +19,8 @@ export default class SocketRepository implements ISocketRepository {
 
     }
 
-    async createOrUpdateTheUserSocketInformation(userId: string, socketId: string, isActive: boolean,) {
+    async createOrUpdateTheUserSocketInformation(userId: string, socketId: string, isActive: boolean) {
+
         return await this.prisma.sockets.upsert({
             where: {
                 userId
@@ -36,3 +38,4 @@ export default class SocketRepository implements ISocketRepository {
     }
 
 }
+

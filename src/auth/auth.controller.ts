@@ -20,6 +20,46 @@ export class AuthController {
             .send(await this.authService.login(req.user));
     }
 
+    @Post('/loginOrRegister')
+    async loginOrRegister(@Body() body: UserDto) {
+
+
+
+        var profile: {
+            name: string,
+            avatar_url: string
+        } = {
+            name: "",
+            avatar_url: ""
+        };
+
+        //check if profile is provided while creating the user.
+        if (body.profile) {
+            profile = {
+                name: body.profile.name,
+                avatar_url: body.profile.avatar_url
+            }
+        }
+
+        // create a new user.
+        const user = await this.authService.loginOrRegister(
+            {
+                email: body.email,
+                password: body.password,
+                name: profile.name,
+                is_admin: body.is_admin,
+                avatar_url: profile.avatar_url,
+                username: body.username
+            }
+        );
+
+        this.logger.log("logged in as : ", user.email);
+        //return the user
+        return user;
+
+    }
+
+
     @Post('/register')
     async register(@Body() body: UserDto) {
 
@@ -39,6 +79,8 @@ export class AuthController {
                 avatar_url: body.profile.avatar_url
             }
         }
+
+
 
         // create a new user.
         const user = await this.authService.register(
