@@ -71,6 +71,20 @@ export class UserController {
     }
 
     @UseGuards(JwtAuthGuard)
+    @Get('/email/:email')
+    async getUserByEmail(@Param('email') email: string) {
+        // console.log(req);
+        const user = await this.userService.getUserByEmail(email);
+        if (!user) {
+            throw new NotFoundException('user not found');
+        }
+
+        const { password, authToken, resetToken, is_admin, ...result } = user;
+
+        return result
+    }
+
+    @UseGuards(JwtAuthGuard)
     @Get('byID/:id')
     async getUserById(@Param('id') id: string) {
         // console.log(req);

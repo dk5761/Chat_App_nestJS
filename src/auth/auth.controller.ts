@@ -30,7 +30,7 @@ export class AuthController {
             avatar_url: string
         } = {
             name: "",
-            avatar_url: ""
+            avatar_url: "https://data.whicdn.com/images/347396386/original.png"
         };
 
         //check if profile is provided while creating the user.

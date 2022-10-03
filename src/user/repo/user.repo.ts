@@ -48,8 +48,9 @@ export class UserRepository implements IUserRepository {
         return await this.prisma.user.findFirst({
             where: query,
             include: {
-                profile: true
+                profile: true,
             }
+
         });
     }
 
